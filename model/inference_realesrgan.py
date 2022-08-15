@@ -1,8 +1,12 @@
 import argparse
+import base64
 from cmath import log
 import cv2
 import glob
 import os
+
+import numpy as np
+from commons.utils import image_to_base64
 from basicsr.archs.rrdbnet_arch import RRDBNet
 from gfpgan import GFPGANer
 from model.realesrgan import RealESRGANer
@@ -88,13 +92,23 @@ def initial_model_demo(args):
 
 
 def infer(args, model, logger):
-    if os.path.isfile(args.input):
-        paths = args.input
-    os.makedirs(args.output, exist_ok=True)
-    imgname, extension = os.path.splitext(os.path.basename(paths))
-    logger.info('Predicting  ' + imgname)
+    if args.type == 'path':
+        if os.path.isfile(args.input):
+            paths = args.input
+        os.makedirs(args.output, exist_ok=True)
+        imgname, extension = os.path.splitext(os.path.basename(paths))
+        logger.info('Predicting  ' + imgname)
 
-    img = cv2.imread(paths, cv2.IMREAD_UNCHANGED)
+        img = cv2.imread(paths, cv2.IMREAD_UNCHANGED)
+
+    elif args.type.startswith('base64'):
+        extension = args.type[6:]
+        imgname = None
+        # 转换为np数组
+        img_array = np.fromstring(args.input, np.uint8)
+        # 转换成opencv可用格式
+        img = cv2.imdecode(img_array, cv2.COLOR_RGB2BGR)
+
     if len(img.shape) == 3 and img.shape[2] == 4:
         img_mode = 'RGBA'
     else:
@@ -118,20 +132,24 @@ def infer(args, model, logger):
     except RuntimeError as error:
         logger.info('Error', error)
         logger.info('If you encounter CUDA out of memory, try to set --tile with a smaller number.')
+
+    if args.ext == 'auto':
+        extension = extension[1:]
     else:
-        if args.ext == 'auto':
-            extension = extension[1:]
-        else:
-            extension = args.ext
-        if img_mode == 'RGBA':  #w RGBA images should be saved in png format
-            extension = 'png'
+        extension = args.ext
+    if img_mode == 'RGBA':  # w RGBA images should be saved in png format
+        extension = 'png'
+    if imgname:
         if args.suffix == '':
             save_path = os.path.join(args.output, f'{imgname}.{extension}')
         else:
             save_path = os.path.join(args.output, f'{imgname}_{args.suffix}.{extension}')
         cv2.imwrite(save_path, output)
         logger.info(f"图片恢复完成,输出在{save_path}")
-        return save_path
+    else:
+        save_path = None
+    image_code = image_to_base64(output, extension)
+    return image_code, save_path
 
 
 if __name__ == '__main__':

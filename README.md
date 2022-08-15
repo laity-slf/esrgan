@@ -18,11 +18,16 @@ ESR接口
         功能：输入一张图片的地址，输出进行相应分辨率恢复的图片地址
         请求输入输出参数如下：
         请求参数说明：
-        input_path：输入图片地址
-        output_path：输出图片地址(默认输出在输入地址同级目录的results文件夹中)
+        input：输入图片地址
+        output：输出图片地址(默认输出在输入地址同级目录的results文件夹中)
+        type:输入类型，本地路径或者base64.文件格式
 
 输入
 
+        {
+            "input":"/home/shanhoo4/slf/esrgan/0014.jpg"
+            "type":"path"
+        }
         {
             "input":"/home/shanhoo4/slf/esrgan/0014.jpg"
         }

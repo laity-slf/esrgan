@@ -22,7 +22,7 @@ def infer_demo(img, model=model_):
         if args.face_enhance:
             _, _, output = model.enhance(img, has_aligned=False, only_center_face=False, paste_back=True)
         else:
-            output, _ = model.enhance(img, outscale=args.outscale)
+            output, _ = model.enhance(img, outscale=4)
     except RuntimeError as error:
         logger.info('Error', error)
         logger.info('If you encounter CUDA out of memory, try to set --tile with a smaller number.')
