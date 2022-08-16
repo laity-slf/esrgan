@@ -144,10 +144,11 @@ def infer(args, model, logger):
             save_path = os.path.join(args.output, f'{imgname}.{extension}')
         else:
             save_path = os.path.join(args.output, f'{imgname}_{args.suffix}.{extension}')
-        cv2.imwrite(save_path, output)
-        logger.info(f"图片恢复完成,输出在{save_path}")
+        # cv2.imwrite(save_path, output)
+        # logger.info(f"图片恢复完成,输出在{save_path}")
     else:
         save_path = None
+    logger.info(f"图片格式为 {extension}")
     image_code = image_to_base64(output, extension)
     return image_code, save_path
 

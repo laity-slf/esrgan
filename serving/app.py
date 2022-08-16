@@ -50,8 +50,7 @@ def arc():
         # arc
         r1, r2 = infer(args, model, logger)
         data = {
-            "base64": r1,
-            "output_path": r2
+            "base64": r1
         }
         return jsonify(status=200, data=data, msg="success")
 
