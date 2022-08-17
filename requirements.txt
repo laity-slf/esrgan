@@ -4,4 +4,4 @@ numpy
 basicsr==1.4.0
 Pillow
 torchvision
-flask==2.1.0
+flask==2.0.2

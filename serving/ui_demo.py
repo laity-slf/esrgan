@@ -32,5 +32,5 @@ def infer_demo(img, model=model_):
 
 
 if __name__ == "__main__":
-    interface = gr.Interface(fn=infer_demo, inputs="image", outputs="image")
+    interface = gr.Interface(fn=infer_demo, inputs="image", outputs="image",)
     interface.launch(share=True)
