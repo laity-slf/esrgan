@@ -43,13 +43,12 @@ class RealESRGANer():
         self.mod_scale = None
         self.half = half
 
-       # initialize model
+        # initialize model
         if gpu_id:
             self.device = torch.device(
-                f'cuda:{gpu_id}' if  torch.cuda.is_available() else 'cpu') if device is None else device
+                f'cuda:{gpu_id}' if torch.cuda.is_available() else 'cpu') if device is None else device
         else:
-            # self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') if device is None else device
-            self.device = 'cpu'
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') if device is None else device
         # if the model_path starts with https, it will first download models to the folder: realesrgan/weights
         if model_path.startswith('https://'):
             model_path = load_file_from_url(
@@ -65,6 +64,9 @@ class RealESRGANer():
         self.model = model.to(self.device)
         if self.half:
             self.model = self.model.half()
+        else:
+            self.model = self.model.to(dtype=torch.bfloat16)
+
 
     def pre_process(self, img):
         """Pre-process, such as pre-pad and mod pad, so that the images can be divisible
@@ -73,6 +75,11 @@ class RealESRGANer():
         self.img = img.unsqueeze(0).to(self.device)
         if self.half:
             self.img = self.img.half()
+        else:
+            self.img = self.img.to(dtype=torch.bfloat16)
+
+        # if self.bf:
+        #     self.img = self.img.to(dtype=torch.bfloat16)
 
         # pre_pad
         if self.pre_pad != 0:
@@ -157,8 +164,8 @@ class RealESRGANer():
 
                 # put tile into output image
                 self.output[:, :, output_start_y:output_end_y,
-                            output_start_x:output_end_x] = output_tile[:, :, output_start_y_tile:output_end_y_tile,
-                                                                       output_start_x_tile:output_end_x_tile]
+                output_start_x:output_end_x] = output_tile[:, :, output_start_y_tile:output_end_y_tile,
+                                               output_start_x_tile:output_end_x_tile]
 
     def post_process(self):
         # remove extra pad

@@ -4,7 +4,7 @@ from cmath import log
 import cv2
 import glob
 import os
-
+import time
 import numpy as np
 from commons.utils import image_to_base64
 from basicsr.archs.rrdbnet_arch import RRDBNet
@@ -98,7 +98,6 @@ def infer(args, model, logger):
         os.makedirs(args.output, exist_ok=True)
         imgname, extension = os.path.splitext(os.path.basename(paths))
         logger.info('Predicting  ' + imgname)
-
         img = cv2.imread(paths, cv2.IMREAD_UNCHANGED)
 
     elif args.type.startswith('base64'):
@@ -108,6 +107,9 @@ def infer(args, model, logger):
         img_array = np.fromstring(args.input, np.uint8)
         # 转换成opencv可用格式
         img = cv2.imdecode(img_array, cv2.COLOR_RGB2BGR)
+
+    if extension not in ['.png', '.jpg']:
+        return None, "仅支持传入jpg/png"
 
     if len(img.shape) == 3 and img.shape[2] == 4:
         img_mode = 'RGBA'
@@ -122,6 +124,8 @@ def infer(args, model, logger):
         scale = 3
     elif max_s <= 300:
         scale = 2
+    elif max_s >= 600:
+        return None, f"shape 为 {img.shape}文件过大，不进行缩放"
     logger.info(f'当前尺寸缩放比例为{scale}')
 
     try:

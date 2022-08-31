@@ -37,8 +37,7 @@ def arc():
             try:
                 img_data = base64.b64decode(data.get('input'))
             except Exception as e:
-                app.logger.info(e)
-                return jsonify(status=112002, msg='wrong base64 encode')
+                raise Exception("不是 base64 编码")
             # 参数写入arg
             args.input = img_data
             args.output = None
@@ -49,6 +48,8 @@ def arc():
         args.type = type
         # arc
         r1, r2 = infer(args, model, logger)
+        if not r1:
+            return jsonify(status=112002, data=None, msg=r2)
         data = {
             "base64": r1
         }
@@ -56,7 +57,7 @@ def arc():
 
     except Exception as e:
         app.logger.info(e)
-        return jsonify(status=112001, msg='fail')
+        return jsonify(status=112001, data=None, msg='fail', )
 
 
 # 执行

@@ -29,6 +29,8 @@ def parse_args():
     parser.add_argument('--GFPGAN_path', type=str, default=basedir+'/data/pretrained_models/GFPGANv1.3.pth', help='model path')
     parser.add_argument(
         '--fp32', action='store_true', help='Use fp32 precision during inference. Default: fp16 (half precision).')
+    # parser.add_argument(
+    #     '--bf', action='store_true', help='Use bfloat16 precision during inference.')
     parser.add_argument(
         '--alpha_upsampler',
         type=str,
